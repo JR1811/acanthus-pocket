@@ -1,35 +1,35 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "acanthus-pocket",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Acanthus Pocket",
+  "description": "A fabric mod all about changing possessions",
   "authors": [
-    "Me!"
+    "ShiroJR1811 - Dev"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://twitter.com/shirojr1811",
+    "sources": "https://github.com/JR1811"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/acanthus-pocket/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "net.shirojr.AcanthusPocket"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "acanthus-pocket.mixins.json"
   ],
 
   "depends": {
     "fabricloader": ">=0.14.17",
     "fabric-api": "*",
-    "minecraft": "~1.19.4",
+    "minecraft": "~1.19.3",
     "java": ">=17"
   },
   "suggests": {
