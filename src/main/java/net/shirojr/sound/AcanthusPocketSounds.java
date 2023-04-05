@@ -12,11 +12,11 @@ public class AcanthusPocketSounds {
 
     static SoundEvent registerSound(String id) {
         SoundEvent sound = SoundEvent.of(new Identifier(AcanthusPocket.MOD_ID, id));
-        return Registry.register(Registries.SOUND_EVENT, new Identifier(AcanthusPocket.MOD_ID), sound);
+        return Registry.register(Registries.SOUND_EVENT, new Identifier(AcanthusPocket.MOD_ID, id), sound);
     }
 
     public static void initializeSounds() {
-        // empty method loads in jvm and initializes NeMuelchSounds class
+        // initialize NeMuelchSounds class
         AcanthusPocket.LOGGER.info("Registering " + AcanthusPocket.MOD_ID + " Sounds");
     }
 }
