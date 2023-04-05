@@ -4,5 +4,11 @@
     "sounds": [
       "acanthus-pocket:metal_whistle"
     ]
+  },
+  "pocketing": {
+    "subtitle": "sound.acanthus-pocket.pocketing",
+    "sounds": [
+      "acanthus-pocket:pocketing"
+    ]
   }
 }
