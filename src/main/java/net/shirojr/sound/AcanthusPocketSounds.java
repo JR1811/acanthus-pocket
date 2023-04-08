@@ -17,6 +17,6 @@ public class AcanthusPocketSounds {
 
     public static void initializeSounds() {
         // initialize NeMuelchSounds class
-        AcanthusPocket.LOGGER.info("Registering " + AcanthusPocket.MOD_ID + " Sounds");
+        AcanthusPocket.LOGGER.info("Registering " + AcanthusPocket.MOD_ID + " sounds");
     }
 }

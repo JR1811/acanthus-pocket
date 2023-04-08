@@ -5,12 +5,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandlerFactory;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
-import net.shirojr.screen.AcanthusPocketScreens;
 import net.shirojr.screen.custom.BasicPocketScreenHandler;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,11 +21,14 @@ import java.util.OptionalInt;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
-    @Shadow public abstract boolean isCreative();
+    @Shadow
+    public abstract boolean isCreative();
 
-    @Shadow public abstract boolean isSpectator();
+    @Shadow
+    public abstract boolean isSpectator();
 
-    @Shadow public abstract OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory);
+    @Shadow
+    public abstract OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory);
 
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -35,12 +36,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-        if (entity instanceof PlayerEntity) {
-            PlayerEntity target = (PlayerEntity) (Object) this;
+        if (isCreative() || isSpectator()) return;
+        if (entity instanceof PlayerEntity target) {
             this.openHandledScreen(new SimpleNamedScreenHandlerFactory(
                     (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, target.getInventory()),
                     target.getName())
             );
+
+            cir.setReturnValue(ActionResult.SUCCESS);
         }
     }
 }

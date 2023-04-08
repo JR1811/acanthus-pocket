@@ -6,8 +6,13 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.shirojr.AcanthusPocket;
+import net.shirojr.item.custom.TestItem;
 
 public class AcanthusPocketItems {
+
+    public static final Item TEST_ITEM = registerItem("test_item",
+            new TestItem(new FabricItemSettings().maxCount(1)));
+
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(AcanthusPocket.MOD_ID, name), item);
     }

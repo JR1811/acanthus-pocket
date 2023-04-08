@@ -3,38 +3,33 @@ package net.shirojr.screen.custom;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
-import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.shirojr.screen.AcanthusPocketScreens;
-import org.jetbrains.annotations.Nullable;
 
 public class BasicPocketScreenHandler extends ScreenHandler {
 
-    private final Inventory inventory;
+    private final Inventory playerInventory;
+    private final Inventory targetInventory;
     public BasicPocketScreenHandler(int syncId, PlayerInventory inventory) {
-        this(syncId, inventory, new SimpleInventory(3));
+        this(syncId, inventory, inventory);
     }
 
-    public BasicPocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public BasicPocketScreenHandler(int syncId, PlayerInventory playerInventory, PlayerInventory targetInventory) {
         super(AcanthusPocketScreens.BASIC_POCKET_HANDLER, syncId);
-        checkSize(inventory, 3);
-        this.inventory = inventory;
-        inventory.onOpen(playerInventory.player);
 
-        //TODO: custom 3 slots
-        //this.addSlot(new Slot(inventory, 0, 56, 17));
-        //this.addSlot(new Slot(inventory, 1, 56, 53));
-        //this.addSlot(new Slot(inventory, 2, 116, 35));
+        checkSize(playerInventory, 3);
+        checkSize(targetInventory, 3);
+
+        this.playerInventory = playerInventory;
+        this.targetInventory = targetInventory;
+        this.playerInventory.onOpen(playerInventory.player);
+        this.targetInventory.onOpen(targetInventory.player);
 
         addPlayerHotbar(playerInventory);
-
+        addTargetSlots(targetInventory);
     }
-
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
@@ -43,13 +38,20 @@ public class BasicPocketScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return false;
+        return player != null;
+    }
+
+    private void addTargetSlots(PlayerInventory targetInventory) {
+        this.addSlot(new Slot(targetInventory, 0, 53, 17));
+        this.addSlot(new Slot(targetInventory, 1, 80, 17));
+        this.addSlot(new Slot(targetInventory, 2, 107, 17));
     }
 
     private void addPlayerHotbar(PlayerInventory playerInventory) {
-
         for (int i = 0; i < 9; i++) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 43));
         }
     }
+
+
 }

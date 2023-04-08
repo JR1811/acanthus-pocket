@@ -6,6 +6,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.shirojr.item.AcanthusPocketItems;
+import net.shirojr.screen.AcanthusPocketScreens;
 import net.shirojr.sound.AcanthusPocketSounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,5 +19,6 @@ public class AcanthusPocket implements ModInitializer {
 	public void onInitialize() {
 		AcanthusPocketItems.registerModItems();
 		AcanthusPocketSounds.initializeSounds();
+		AcanthusPocketScreens.registerScreens();
 	}
 }
