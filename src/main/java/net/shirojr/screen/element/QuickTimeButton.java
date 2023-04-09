@@ -16,8 +16,8 @@ public class QuickTimeButton extends ButtonWidget {
     private int positionY;
     public QuickTimeButton(int x, int y, int width, int height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
         super(x, y, width, height, message, onPress, narrationSupplier);
-        this.positionX = x + 5;
-        this.positionY = y + 5;
+        this.positionX = x;
+        this.positionY = y;
         this.width = width;
         this.height = height;
     }

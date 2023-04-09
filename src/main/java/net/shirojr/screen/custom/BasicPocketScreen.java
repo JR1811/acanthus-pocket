@@ -2,15 +2,16 @@ package net.shirojr.screen.custom;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.Random;
 import net.shirojr.AcanthusPocket;
 import net.shirojr.screen.element.QuickTimeButton;
 
@@ -31,19 +32,19 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
         super.init();
 
         titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
-        int buttonsWidth = 14;
-        int buttonsHeight = 10;
+        int buttonsWidth = 10;
+        int buttonsHeight = 14;
         int buttonsX = (this.width / 2) + (backgroundWidth / 2);
-        int buttonsY = (this.height / 2) - (backgroundWidth / 2);
+        int buttonsY = (this.height / 2) - (backgroundHeight / 2);
 
         this.buttons.add(this.addDrawableChild(new QuickTimeButton(buttonsX, buttonsY, buttonsWidth, buttonsHeight,
                 Text.translatable("gui.acanthes-pocket.basic_pocket_gui"), (button) -> {
 
-            //handler.resetProgress();    // only client side
+            handler.succeededQuickTimeEvent();
 
             if (this.client != null) {
                 this.client.interactionManager.clickButton(this.handler.syncId, 0);
-                this.close();
+                //this.close();
             }
         }, Supplier::get)));
     }
@@ -54,8 +55,8 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        int x = (width - this.backgroundWidth) / 2;
-        int y = (height - this.backgroundHeight) / 2;
+        int x = (this.width / 2) - (backgroundWidth / 2);
+        int y = (this.height / 2) - (backgroundHeight / 2);
 
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
     }
@@ -69,13 +70,34 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
 
     @Override
     protected void handledScreenTick() {
-        this.tick = tick + 1;
-        if (tick > 100) {
-            //TODO: unhide button
+        int invisibleTicks = 60;
+        int visibleTicks = 10;
 
+        this.tick++;
+
+        if (tick < invisibleTicks) {
+            //this.buttons.get(0).visible = false;
+        }
+        else if (tick < invisibleTicks + visibleTicks) {
+
+
+            //this.buttons.get(0).setPos(x, y);
+            this.buttons.get(0).visible = true;
+        } else {
+            handler.failedQuickTimeEvent();
             this.tick = 0;
         }
+
         super.handledScreenTick();
     }
 
+    private int[] getButtonPosition() {
+        if (MinecraftClient.getInstance().player == null) return null;
+        Random random = MinecraftClient.getInstance().player.getWorld().getRandom();
+
+        int[] output = new int[2];
+        output[0] = random.nextBoolean() ? 180 : 0;
+        output[1] = random.nextInt(52);
+        return output;
+    }
 }

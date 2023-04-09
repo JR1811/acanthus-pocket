@@ -53,5 +53,11 @@ public class BasicPocketScreenHandler extends ScreenHandler {
         }
     }
 
+    public void succeededQuickTimeEvent() {
 
+    }
+
+    public void failedQuickTimeEvent() {
+
+    }
 }
