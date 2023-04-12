@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -39,7 +40,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         if (isCreative() || isSpectator()) return;
         if (entity instanceof PlayerEntity target) {
             this.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-                    (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, target.getInventory()),
+                    (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, target.getInventory(),
+                            target, ScreenHandlerContext.create(this.getWorld(), target.getBlockPos())),
                     target.getName())
             );
 

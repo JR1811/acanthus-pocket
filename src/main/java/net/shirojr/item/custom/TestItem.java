@@ -32,7 +32,7 @@ public class TestItem extends Item {
         }
 
         user.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-                (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, inv),
+                (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv),
                 user.getName())
         );
 

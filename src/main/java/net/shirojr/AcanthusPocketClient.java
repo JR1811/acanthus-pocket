@@ -12,7 +12,6 @@ import net.shirojr.screen.custom.BasicPocketScreenHandler;
 public class AcanthusPocketClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        // ScreenRegistry.register(AcanthusPocketScreens.BASIC_POCKET_HANDLER, BasicPocketScreen::new);
         HandledScreens.register(AcanthusPocketScreens.BASIC_POCKET_HANDLER, BasicPocketScreen::new);
     }
 }

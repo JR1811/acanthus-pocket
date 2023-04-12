@@ -10,7 +10,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
 import net.shirojr.AcanthusPocket;
 import net.shirojr.screen.element.QuickTimeButton;
@@ -31,22 +30,16 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
     protected void init() {
         super.init();
 
-        titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
-        int buttonsWidth = 10;
-        int buttonsHeight = 14;
-        int buttonsX = (this.width / 2) + (backgroundWidth / 2);
-        int buttonsY = (this.height / 2) - (backgroundHeight / 2);
+        this.backgroundWidth = 175;
+        this.backgroundHeight = 81;
 
-        this.buttons.add(this.addDrawableChild(new QuickTimeButton(buttonsX, buttonsY, buttonsWidth, buttonsHeight,
-                Text.translatable("gui.acanthes-pocket.basic_pocket_gui"), (button) -> {
+        this.titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
+        this.titleY = 49;
+        this.playerInventoryTitleX = 7;
+        this.playerInventoryTitleY = this.backgroundHeight + 7;
 
-            handler.succeededQuickTimeEvent();
 
-            if (this.client != null) {
-                this.client.interactionManager.clickButton(this.handler.syncId, 0);
-                //this.close();
-            }
-        }, Supplier::get)));
+        addNewButton(getButtonPosition()[0], getButtonPosition()[1]);
     }
 
     @Override
@@ -77,27 +70,58 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
 
         if (tick < invisibleTicks) {
             //this.buttons.get(0).visible = false;
-        }
-        else if (tick < invisibleTicks + visibleTicks) {
+        } else if (tick < invisibleTicks + visibleTicks) {
+            if (getButtonPosition() != null) {
+                this.buttons.remove(0);
+                addNewButton(getButtonPosition()[0], getButtonPosition()[1]);
+                //this.buttons.get(0).setPos(getButtonPosition()[0], getButtonPosition()[1]);
+            }
 
-
-            //this.buttons.get(0).setPos(x, y);
             this.buttons.get(0).visible = true;
         } else {
             handler.failedQuickTimeEvent();
             this.tick = 0;
         }
-
         super.handledScreenTick();
     }
 
     private int[] getButtonPosition() {
         if (MinecraftClient.getInstance().player == null) return null;
-        Random random = MinecraftClient.getInstance().player.getWorld().getRandom();
 
+        Random random = MinecraftClient.getInstance().player.getWorld().getRandom();
+        int buttonMargin = 5;
         int[] output = new int[2];
-        output[0] = random.nextBoolean() ? 180 : 0;
-        output[1] = random.nextInt(52);
+
+        if (random.nextBoolean()) {
+            output[0] = (this.width / 2) + (backgroundWidth / 2) + buttonMargin;
+        } else {
+            output[0] = (this.width / 2) - (backgroundWidth / 2) - (buttonMargin + 10);
+        }
+
+        output[1] = random.nextBetween((this.height / 2) - (backgroundHeight / 2), (this.height / 2) + (backgroundHeight / 2) - 14);
+
+        //output[0] = random.nextBoolean() ? 180 : 0;
+        //output[1] = random.nextInt(52);
         return output;
+    }
+
+    /**
+     * Deletes old version of the botton and creates a new one
+     *
+     * @param x X value of the button
+     * @param y Y value of the button
+     */
+    private void addNewButton(int x, int y) {
+        this.buttons.clear();
+        this.buttons.add(this.addDrawableChild(new QuickTimeButton(x, y,
+                Text.translatable("gui.acanthes-pocket.basic_pocket_gui"), (button) -> {
+
+            handler.succeededQuickTimeEvent();
+
+            if (this.client != null) {
+                this.client.interactionManager.clickButton(this.handler.syncId, 0);
+                //this.close();
+            }
+        }, Supplier::get)));
     }
 }

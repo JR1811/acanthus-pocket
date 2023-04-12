@@ -14,12 +14,13 @@ import net.shirojr.AcanthusPocket;
 public class QuickTimeButton extends ButtonWidget {
     private int positionX;
     private int positionY;
-    public QuickTimeButton(int x, int y, int width, int height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
-        super(x, y, width, height, message, onPress, narrationSupplier);
+    private final static int WIDTH = 10;
+    private final int HEIGHT = 14;
+
+    public QuickTimeButton(int x, int y, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
+        super(x, y, 10, 14, message, onPress, narrationSupplier);
         this.positionX = x;
         this.positionY = y;
-        this.width = width;
-        this.height = height;
     }
 
     @Override
@@ -36,4 +37,5 @@ public class QuickTimeButton extends ButtonWidget {
         }
         this.drawTexture(matrices, positionX, positionY, u , v, 10, 14);
     }
+
 }
