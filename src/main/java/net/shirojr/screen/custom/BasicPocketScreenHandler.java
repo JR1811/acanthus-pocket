@@ -2,6 +2,7 @@ package net.shirojr.screen.custom;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -10,26 +11,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.shirojr.AcanthusPocket;
 import net.shirojr.screen.AcanthusPocketScreens;
 import net.shirojr.sound.AcanthusPocketSounds;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class BasicPocketScreenHandler extends ScreenHandler {
 
     private final Inventory playerInventory;
     private final Inventory targetInventory;
     private final ScreenHandlerContext context;
+    private PlayerEntity player;
     private PlayerEntity target;
 
     public BasicPocketScreenHandler(int syncId, PlayerInventory inventory) {
-        this(syncId, inventory, new SimpleInventory(3), null, ScreenHandlerContext.EMPTY);
+        this(syncId, inventory, new SimpleInventory(3), inventory.player, null, ScreenHandlerContext.EMPTY);
     }
 
     public BasicPocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory targetInventory,
-                                    @Nullable PlayerEntity target, ScreenHandlerContext context) {
+                                    @Nullable PlayerEntity player, @Nullable PlayerEntity target, ScreenHandlerContext context) {
         super(AcanthusPocketScreens.BASIC_POCKET_HANDLER, syncId);
 
         // handling client-sided null of target
@@ -38,6 +43,7 @@ public class BasicPocketScreenHandler extends ScreenHandler {
             targetInventory = target.getInventory();
         }
         this.target = target;
+        this.player = player;
         this.context = context;
         this.playerInventory = playerInventory;
         this.targetInventory = targetInventory;
@@ -100,6 +106,13 @@ public class BasicPocketScreenHandler extends ScreenHandler {
         this.addSlot(new Slot(assembleRandomEntries(targetInventory), 2, 108, y));
     }
 
+    private void setTargetSlot(Inventory inventory) {
+        int y = 63;
+        this.slots.set(0, new Slot(assembleRandomEntries(inventory), 0, 54, y));
+        this.slots.set(1, new Slot(assembleRandomEntries(inventory), 1, 81, y));
+        this.slots.set(2, new Slot(assembleRandomEntries(inventory), 2, 108, y));
+    }
+
     private void addPlayerHotbar(PlayerInventory playerInventory) {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 9 + i * 18, 101));
@@ -107,11 +120,27 @@ public class BasicPocketScreenHandler extends ScreenHandler {
     }
 
     public void succeededQuickTimeEvent() {
-
+        this.setTargetSlot(targetInventory);
     }
 
-    public void failedQuickTimeEvent() {
+    public void failedQuickTimeEvent(UUID uuid) {
+        AcanthusPocket.LOGGER.info("failed QT event");
+        this.context.run((world, pos) -> {
+            if (world instanceof ServerWorld serverWorld) {
+                player = (PlayerEntity) serverWorld.getEntity(uuid);
+                player.damage(DamageSource.GENERIC, 3f);
+            }
+        });
+    }
 
+    @Override
+    public boolean onButtonClick(PlayerEntity player, int id) {
+        // eject button
+        if (id == 0) {
+            this.succeededQuickTimeEvent();
+            return true;
+        }
+        return super.onButtonClick(player, id);
     }
 
     private Inventory assembleRandomEntries(Inventory targetInventory) {
@@ -135,5 +164,4 @@ public class BasicPocketScreenHandler extends ScreenHandler {
 
         return inventory;
     }
-
 }

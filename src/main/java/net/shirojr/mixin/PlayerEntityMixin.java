@@ -7,9 +7,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import net.shirojr.AcanthusPocket;
 import net.shirojr.screen.custom.BasicPocketScreenHandler;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,10 +40,11 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     public void interact(Entity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (isCreative() || isSpectator()) return;
-        if (entity instanceof PlayerEntity target) {
+        if (entity instanceof ServerPlayerEntity target) {
+            AcanthusPocket.LOGGER.info("target is: " + target);
             this.openHandledScreen(new SimpleNamedScreenHandlerFactory(
                     (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, target.getInventory(),
-                            target, ScreenHandlerContext.create(this.getWorld(), target.getBlockPos())),
+                            (PlayerEntity) (Object) this, target, ScreenHandlerContext.create(this.getWorld(), target.getBlockPos())),
                     target.getName())
             );
 

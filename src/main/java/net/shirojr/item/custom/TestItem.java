@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -29,12 +30,15 @@ public class TestItem extends Item {
             world.playSound(null, user.getBlockPos(),
                     SoundEvents.BLOCK_COPPER_PLACE, SoundCategory.PLAYERS,
                     1f, 1f);
+
+            user.openHandledScreen(new SimpleNamedScreenHandlerFactory(
+                    (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv, player.getInventory(),
+                            user, player, ScreenHandlerContext.create(world, player.getBlockPos())),
+                    user.getName())
+            );
         }
 
-        user.openHandledScreen(new SimpleNamedScreenHandlerFactory(
-                (syncId, inv, player) -> new BasicPocketScreenHandler(syncId, inv),
-                user.getName())
-        );
+
 
         return super.use(world, user, hand);
     }

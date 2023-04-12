@@ -2,12 +2,15 @@ package net.shirojr.screen.custom;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
@@ -21,9 +24,11 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(AcanthusPocket.MOD_ID, "textures/screens/basic_pocket_gui.png");
     private final List<ButtonWidget> buttons = Lists.newArrayList();
     private int tick = 0;
+    private PlayerInventory inventory;
 
     public BasicPocketScreen(BasicPocketScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        this.inventory = inventory;
     }
 
     @Override
@@ -63,25 +68,33 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
 
     @Override
     protected void handledScreenTick() {
-        int invisibleTicks = 60;
-        int visibleTicks = 10;
+        int invisibleTicks = 20;
+        int visibleTicks = 40;
 
         this.tick++;
 
         if (tick < invisibleTicks) {
-            //this.buttons.get(0).visible = false;
-        } else if (tick < invisibleTicks + visibleTicks) {
+            this.buttons.get(0).visible = false;
+        } else if (tick == invisibleTicks) {
             if (getButtonPosition() != null) {
                 this.buttons.remove(0);
                 addNewButton(getButtonPosition()[0], getButtonPosition()[1]);
-                //this.buttons.get(0).setPos(getButtonPosition()[0], getButtonPosition()[1]);
             }
 
             this.buttons.get(0).visible = true;
-        } else {
-            handler.failedQuickTimeEvent();
-            this.tick = 0;
+            //tick = 0;
         }
+
+        if (tick > invisibleTicks + visibleTicks) {
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeUuid(inventory.player.getUuid());
+            ClientPlayNetworking.send(AcanthusPocket.FAILED_QUICK_TIME_PACKET_ID, buf);
+
+            tick = 0;
+            //this.close();
+        }
+
         super.handledScreenTick();
     }
 
@@ -116,10 +129,10 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
         this.buttons.add(this.addDrawableChild(new QuickTimeButton(x, y,
                 Text.translatable("gui.acanthes-pocket.basic_pocket_gui"), (button) -> {
 
-            handler.succeededQuickTimeEvent();
-
             if (this.client != null) {
+                tick = 0;
                 this.client.interactionManager.clickButton(this.handler.syncId, 0);
+                this.buttons.get(0).visible = false;
                 //this.close();
             }
         }, Supplier::get)));
