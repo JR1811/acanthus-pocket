@@ -13,6 +13,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.shirojr.AcanthusPocket;
 import net.shirojr.screen.AcanthusPocketScreens;
 import net.shirojr.sound.AcanthusPocketSounds;
@@ -31,6 +32,9 @@ public class BasicPocketScreenHandler extends ScreenHandler {
 
     public BasicPocketScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, new SimpleInventory(3), inventory.player, null, ScreenHandlerContext.EMPTY);
+
+        AcanthusPocket.devLogger("loaded on the client side, target inventory behavior might be compromised");
+
     }
 
     public BasicPocketScreenHandler(int syncId, PlayerInventory playerInventory, Inventory targetInventory,
@@ -124,11 +128,12 @@ public class BasicPocketScreenHandler extends ScreenHandler {
     }
 
     public void failedQuickTimeEvent(UUID uuid) {
-        AcanthusPocket.LOGGER.info("failed QT event");
+        AcanthusPocket.devLogger("failed quick time event");
         this.context.run((world, pos) -> {
             if (world instanceof ServerWorld serverWorld) {
                 player = (PlayerEntity) serverWorld.getEntity(uuid);
                 player.damage(DamageSource.GENERIC, 3f);
+                player.sendMessage(Text.translatable("chat.acanthus-pocket.quicktimeevent"));
             }
         });
     }

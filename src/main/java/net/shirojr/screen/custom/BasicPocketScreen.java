@@ -43,7 +43,6 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
         this.playerInventoryTitleX = 7;
         this.playerInventoryTitleY = this.backgroundHeight + 7;
 
-
         addNewButton(getButtonPosition()[0], getButtonPosition()[1]);
     }
 
@@ -86,10 +85,12 @@ public class BasicPocketScreen extends HandledScreen<BasicPocketScreenHandler> {
         }
 
         if (tick > invisibleTicks + visibleTicks) {
+            if (this.inventory.player.getWorld().isClient) {
+                PacketByteBuf buf = PacketByteBufs.create();
+                buf.writeUuid(inventory.player.getUuid());
+                ClientPlayNetworking.send(AcanthusPocket.FAILED_QUICK_TIME_PACKET_ID, buf);
+            }
 
-            PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeUuid(inventory.player.getUuid());
-            ClientPlayNetworking.send(AcanthusPocket.FAILED_QUICK_TIME_PACKET_ID, buf);
 
             tick = 0;
             //this.close();
